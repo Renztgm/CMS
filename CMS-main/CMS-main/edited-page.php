@@ -1,41 +1,34 @@
 <?php
-  // Include your database connection
-  include('db.php');
-
-  // Check if 'id' is passed in the URL
-  if (isset($_GET['id'])) {
+include('db.php');
+// Check if 'id' is passed in the URL
+if (isset($_GET['id'])) {
     $page_id = $_GET['id']; // Get the page ID from the URL
-
-    // Prepare SQL query to fetch multiple columns
     $stmt = $conn->prepare("SELECT website_name, page_title, logo_path FROM pages WHERE id = ?");
-    
-    // Bind the 'id' parameter
     $stmt->bind_param("i", $page_id);
-
-    // Execute the statement
     $stmt->execute();
-
-    // Bind the result to variables
-    $stmt->bind_result($website_name, $page_title, $logo_path);  // Original column names
+    $stmt->bind_result($website_name, $page_title, $logo_path);
 
     // Fetch the result
     if ($stmt->fetch()) {
-      // Rename the variables for clarity
-      $site_name = $website_name;  // Rename website_name to site_name
-      $title = $page_title;        // Rename page_title to title
-      $logo = $logo_path;          // Rename logo_path to logo
+        // Rename the variables for clarity
+        $site_name = $website_name;  // Rename website_name to site_name
+        $title = $page_title;        // Rename page_title to title
+        $logo = $logo_path;          // Rename logo_path to logo
+
+
     } else {
-      echo "<p>Page not found.</p>";
+        echo "<p>Page not found.</p>";
     }
 
     // Close the prepared statement
     $stmt->close();
-  } else {
+} else {
     echo "<p>No page ID provided.</p>";
-  }
+}
 ?>
+
 <?php
-// Database connection (make sure you replace this with your actual database connection)
+// Database connection
 $mysqli = new mysqli("localhost", "root", "", "z");
 
 // Check connection
@@ -54,7 +47,6 @@ $sections = [];
 while ($row = $result->fetch_assoc()) {
     $sections[] = $row;
 }
-
 $stmt->close();
 ?>
 
@@ -62,6 +54,7 @@ $stmt->close();
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -75,7 +68,7 @@ $stmt->close();
 
         .top-nav {
             margin: 0;
-            overflow: hidden; 
+            overflow: hidden;
             display: flex;
             align-items: center;
             padding: 0 50px 0 50px;
@@ -106,17 +99,20 @@ $stmt->close();
             align-items: center;
             justify-content: space-between;
         }
+
         .right-top-nav {
             display: flex;
-            align-items: center;        
+            align-items: center;
             width: 30%;
             justify-content: space-between;
         }
+
         main {
             margin: 0;
             display: flex;
             justify-content: space-between;
         }
+
         aside {
             border-left: 1px solid #ccc;
             list-style-type: none;
@@ -125,11 +121,13 @@ $stmt->close();
             height: 90vh;
             margin: 0;
         }
+
         .buttonbox {
             margin: 10px;
             width: 90%;
             height: 50px;
         }
+
         aside ul {
             margin: 0;
             padding: 10px;
@@ -139,6 +137,7 @@ $stmt->close();
             list-style-type: none;
             border-bottom: 1px solid #ccc;
         }
+
         .column {
             border-right: 1px solid #ccc;
             list-style-type: none;
@@ -147,6 +146,7 @@ $stmt->close();
             height: 90vh;
             margin: 0;
         }
+
         .viewing {
             overflow-y: auto;
             overflow-x: auto;
@@ -155,17 +155,20 @@ $stmt->close();
             height: 80vh;
             text-decoration: none;
         }
-        .viewing a{
+
+        .viewing a {
             text-decoration: none;
             color: #000;
         }
     </style>
 </head>
+
+
 <body>
     <div class="top-nav">
         <div class="left-top-nav">
-        <a href="index.php">
-            <img src="img\home.svg" alt=""width="20px" height="auto">
+            <a href="index.php">
+                <img src="img\home.svg" alt="" width="20px" height="auto">
             </a>
             <?php echo "<img src='{$logo}' width='20'>"; ?>
             <p><?php echo $site_name ?></p>
@@ -175,297 +178,303 @@ $stmt->close();
         </div>
         <div class="right-top-nav">
             <a href="edited-page.php?id=<?php echo $page_id; ?>">
-            <img src="img\refresh.svg" alt=""width="20px" height="auto">
+                <img src="img\refresh.svg" alt="" width="20px" height="auto">
             </a>
             <a href="exampleviewing.php?id=<?php echo $page_id; ?>">
-                <img src="img\preview.svg" alt=""width="20px" height="auto">
+                <img src="img\preview.svg" alt="" width="20px" height="auto">
             </a>
 
         </div>
     </div>
+
     <main>
-    <?php
-$mysqli = new mysqli('localhost', 'root', '', 'z');
-$page_id = $_GET['id'] ?? 0;
+        <?php
+        $mysqli = new mysqli('localhost', 'root', '', 'z');
+        $page_id = $_GET['id'] ?? 0;
 
-// Fetch sections for this page
-$query = "SELECT * FROM sections WHERE page_id = ?";
-$stmt = $mysqli->prepare($query);
-$stmt->bind_param('i', $page_id);
-$stmt->execute();
-$sections_result = $stmt->get_result();
-$sections = $sections_result->fetch_all(MYSQLI_ASSOC);
+        // Fetch sections for this page
+        $query = "SELECT * FROM sections WHERE page_id = ?";
+        $stmt = $mysqli->prepare($query);
+        $stmt->bind_param('i', $page_id);
+        $stmt->execute();
+        $sections_result = $stmt->get_result();
+        $sections = $sections_result->fetch_all(MYSQLI_ASSOC);
 
-// Fetch section elements
-$elements_result = $mysqli->query("SELECT * FROM section_elements");
-$elements = $elements_result->fetch_all(MYSQLI_ASSOC);
+        // Fetch section elements
+        $elements_result = $mysqli->query("SELECT * FROM section_elements");
+        $elements = $elements_result->fetch_all(MYSQLI_ASSOC);
 
-// Group elements by section_id
-$grouped_elements = [];
-foreach ($elements as $element) {
-    $grouped_elements[$element['section_id']][] = $element;
-}
-?>
-
-    
-    <div class="column">
-    <div class="container">
-    <?php foreach ($sections as $section): ?>
-        <div class="card my-3">
-            <div class="card-header bg-light">
-                <p><?= htmlspecialchars($section['name']) ?></p><p style="font-size: 10px;">(SID: <?= $section['id'] ?>)</p>
-                <button class="btn edit-section-btn" data-id="<?= $section['id'] ?>">Edit Section</button>
-                <input type="hidden" name="id" value="<?= $section['id'] ?>">
-                <form action="delete-section.php" method="POST" style="display:inline;">
-                    <input type="hidden" name="id" value="<?= $section['id'] ?>">
-                    <input type="hidden" name="page_id" value="<?= $section['page_id'] ?>">
-                    <button type="submit" onclick="return confirm('Delete this section and its elements?')">🗑️ Delete Section</button>
-                </form>
-
-            </div>
-
-            <div class="card-body">
-                <?php foreach ($grouped_elements[$section['id']] ?? [] as $element): ?>
-                    <div class="border rounded p-3 mb-3">
-                        <p><strong>Type:</strong> <?= htmlspecialchars($element['element_type']) ?></p>
-                        <button class="btn edit-element-btn" data-id="<?= $element['id'] ?>">Edit</button>
-                        <form action="delete-element.php" method="POST" style="display:inline;">
-                            <input type="hidden" name="id" value="<?= $element['id'] ?>">
-                            <input type="hidden" name="page_id" value="<?= $page_id ?>">
-                            <button type="submit" onclick="return confirm('Delete this element?')">🗑️ Delete Element</button>
-                        </form>
+        // Group elements by section_id
+        $grouped_elements = [];
+        foreach ($elements as $element) {
+            $grouped_elements[$element['section_id']][] = $element;
+        }
+        ?>
 
 
+        <div class="column">
+            <div class="container">
+                <?php foreach ($sections as $section): ?>
+                    <div class="card my-3">
+                        <div class="card-header bg-light">
+                            <p><?= htmlspecialchars($section['name']) ?></p>
+                            <p style="font-size: 10px;">(SID: <?= $section['id'] ?>)</p>
+                            <button class="btn edit-section-btn" data-id="<?= $section['id'] ?>">Edit Section</button>
+                            <input type="hidden" name="id" value="<?= $section['id'] ?>">
+                            <form action="delete-section.php" method="POST" style="display:inline;">
+                                <input type="hidden" name="id" value="<?= $section['id'] ?>">
+                                <input type="hidden" name="page_id" value="<?= $section['page_id'] ?>">
+                                <button type="submit" onclick="return confirm('Delete this section and its elements?')">🗑️ Delete Section</button>
+                            </form>
+
+                        </div>
+
+                        <div class="card-body">
+                            <?php foreach ($grouped_elements[$section['id']] ?? [] as $element): ?>
+                                <div class="border rounded p-3 mb-3">
+                                    <p><strong>Type:</strong> <?= htmlspecialchars($element['element_type']) ?></p>
+                                    <button class="btn edit-element-btn" data-id="<?= $element['id'] ?>">Edit</button>
+                                    <form action="delete-element.php" method="POST" style="display:inline;">
+                                        <input type="hidden" name="id" value="<?= $element['id'] ?>">
+                                        <input type="hidden" name="page_id" value="<?= $page_id ?>">
+                                        <button type="submit" onclick="return confirm('Delete this element?')">🗑️ Delete Element</button>
+                                    </form>
+
+
+                                </div>
+
+                                <!-- Element Modal -->
+                                <div class="modal" id="editModal<?= $element['id'] ?>">
+                                    <div class="modal-content">
+                                        <form action="update-element.php" method="POST">
+                                            <input type="hidden" name="page_id" value="<?php echo $page_id ?>">
+                                            <input type="hidden" name="id" value="<?= $element['id'] ?>">
+                                            <input type="hidden" name="section_id" value="<?= $element['section_id'] ?>">
+
+                                            <label>Element Type</label>
+                                            <input type="text" name="element_type" value="<?= htmlspecialchars($element['element_type']) ?>">
+
+                                            <label>Content</label>
+                                            <textarea name="content"><?= htmlspecialchars($element['content']) ?></textarea>
+
+                                            <label>Width</label>
+                                            <input type="text" name="width" value="<?= htmlspecialchars($element['width']) ?>">
+
+                                            <label>Height</label>
+                                            <input type="text" name="height" value="<?= htmlspecialchars($element['height']) ?>">
+
+                                            <label>Alignment</label>
+                                            <input type="text" name="alignment" value="<?= htmlspecialchars($element['alignment']) ?>">
+
+                                            <label>Padding</label>
+                                            <input type="text" name="padding" value="<?= htmlspecialchars($element['padding']) ?>">
+
+                                            <label>Margin</label>
+                                            <input type="text" name="margin" value="<?= htmlspecialchars($element['margin']) ?>">
+
+                                            <label>Border</label>
+                                            <input type="text" name="border" value="<?= htmlspecialchars($element['border']) ?>">
+
+                                            <label>Border Radius</label>
+                                            <input type="text" name="border_radius" value="<?= htmlspecialchars($element['border_radius']) ?>">
+
+                                            <label for="font-family">Font Family:</label>
+                                            <select id="font-family" name="font-family">
+                                                <option value="Arial" <?= $element['font_family'] === 'Arial' ? 'selected' : '' ?>>Arial</option>
+                                                <option value="Verdana" <?= $element['font_family'] === 'Verdana' ? 'selected' : '' ?>>Verdana</option>
+                                                <option value="Times New Roman" <?= $element['font_family'] === 'Times New Roman' ? 'selected' : '' ?>>Times New Roman</option>
+                                                <option value="Georgia" <?= $element['font_family'] === 'Georgia' ? 'selected' : '' ?>>Georgia</option>
+                                                <option value="Courier New" <?= $element['font_family'] === 'Courier New' ? 'selected' : '' ?>>Courier New</option>
+                                            </select><br>
+
+                                            <label for="font-size">Font Size:</label>
+                                            <input type="number" id="font-size" name="font-size" value="<?= htmlspecialchars($element['font_size']) ?>">
+                                            <select name="font-size-unit">
+                                                <option value="px" <?= strpos($element['font_size'], 'px') !== false ? 'selected' : '' ?>>px</option>
+                                                <option value="em" <?= strpos($element['font_size'], 'em') !== false ? 'selected' : '' ?>>em</option>
+                                                <option value="rem" <?= strpos($element['font_size'], 'rem') !== false ? 'selected' : '' ?>>rem</option>
+                                                <option value="%" <?= strpos($element['font_size'], '%') !== false ? 'selected' : '' ?>>%</option>
+                                            </select><br>
+
+                                            <button type="submit">Save</button>
+                                            <button type="button" class="close-btn" data-id="<?= $element['id'] ?>">Cancel</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
                     </div>
 
-                    <!-- Element Modal -->
-                    <div class="modal" id="editModal<?= $element['id'] ?>">
+                    <!-- Section Modal (for editing section name) -->
+                    <div class="modal" id="sectionModal<?= $section['id'] ?>">
                         <div class="modal-content">
-                            <form action="update-element.php" method="POST">
+                            <p><?= htmlspecialchars($section['name']) ?></p>
+                            <p style="font-size: 10px;">(SID: <?= $section['id'] ?>)</p>
+                            <form action="update-section.php" method="POST">
+                                <input type="hidden" name="id" value="<?php echo $section['id'] ?>">
                                 <input type="hidden" name="page_id" value="<?php echo $page_id ?>">
-                                <input type="hidden" name="id" value="<?= $element['id'] ?>">
-                                <input type="hidden" name="section_id" value="<?= $element['section_id'] ?>">
+                                <input type="hidden" name="type" value="<?php echo $section['type'] ?>"><br>
+                                <input type="hidden" name="parent_id" value="<?php echo $section['parent_id'] ?>"><br>
+                                <label>Name:</label><input type="text" name="name" value="<?php echo $section['name'] ?>" disabled><br>
 
-                                <label>Element Type</label>
-                                <input type="text" name="element_type" value="<?= htmlspecialchars($element['element_type']) ?>">
-
-                                <label>Content</label>
-                                <textarea name="content"><?= htmlspecialchars($element['content']) ?></textarea>
-
-                                <label>Width</label>
-                                <input type="text" name="width" value="<?= htmlspecialchars($element['width']) ?>">
-
-                                <label>Height</label>
-                                <input type="text" name="height" value="<?= htmlspecialchars($element['height']) ?>">
-
-                                <label>Alignment</label>
-                                <input type="text" name="alignment" value="<?= htmlspecialchars($element['alignment']) ?>">
-
-                                <label>Padding</label>
-                                <input type="text" name="padding" value="<?= htmlspecialchars($element['padding']) ?>">
-
-                                <label>Margin</label>
-                                <input type="text" name="margin" value="<?= htmlspecialchars($element['margin']) ?>">
-
-                                <label>Border</label>
-                                <input type="text" name="border" value="<?= htmlspecialchars($element['border']) ?>">
-
-                                <label>Border Radius</label>
-                                <input type="text" name="border_radius" value="<?= htmlspecialchars($element['border_radius']) ?>">
+                                <label>Width:</label><input type="text" name="width" value="<?php echo $section['width'] ?>"><br>
+                                <label>Height:</label><input type="text" name="height" value="<?php echo $section['height'] ?>"><br>
+                                <label>Align Items:</label><input type="text" name="align_items" value="<?php echo $section['align_items'] ?>"><br>
+                                <label>Justify Content:</label><input type="text" name="justify_content" value="<?php echo $section['justify_content'] ?>"><br>
+                                <label>Padding:</label><input type="text" name="padding" value="<?php echo $section['padding'] ?>"><br>
+                                <label>Margin:</label><input type="text" name="margin" value="<?php echo $section['margin'] ?>"><br>
+                                <label>Background Color:</label><input type="text" name="background_color" value="<?php echo $section['background_color'] ?>"><br>
+                                <label>Border Value:</label><input type="text" name="border_value" value="<?php echo $section['border_value'] ?>"><br>
+                                <label>Border Style:</label><input type="text" name="border_style" value="<?php echo $section['border_style'] ?>"><br>
+                                <label>Border Color:</label><input type="text" name="border_color" value="<?php echo $section['border_color'] ?>"><br>
+                                <label>Border Radius:</label><input type="text" name="border_radius" value="<?php echo $section['border_radius'] ?>"><br>
+                                <label>Flex Direction:</label><input type="text" name="flex_direction" value="<?php echo $section['flex_direction'] ?>"><br>
 
                                 <label for="font-family">Font Family:</label>
                                 <select id="font-family" name="font-family">
-                                    <option value="Arial" <?= $element['font_family'] === 'Arial' ? 'selected' : '' ?>>Arial</option>
-                                    <option value="Verdana" <?= $element['font_family'] === 'Verdana' ? 'selected' : '' ?>>Verdana</option>
-                                    <option value="Times New Roman" <?= $element['font_family'] === 'Times New Roman' ? 'selected' : '' ?>>Times New Roman</option>
-                                    <option value="Georgia" <?= $element['font_family'] === 'Georgia' ? 'selected' : '' ?>>Georgia</option>
-                                    <option value="Courier New" <?= $element['font_family'] === 'Courier New' ? 'selected' : '' ?>>Courier New</option>
+                                    <option value="Arial">Arial</option>
+                                    <option value="Verdana">Verdana</option>
+                                    <option value="Times New Roman">Times New Roman</option>
+                                    <option value="Georgia">Georgia</option>
+                                    <option value="Courier New">Courier New</option>
                                 </select><br>
 
                                 <label for="font-size">Font Size:</label>
-                                <input type="number" id="font-size" name="font-size" value="<?= htmlspecialchars($element['font_size']) ?>">
+                                <input type="number" id="font-size" name="font-size" value="16">
                                 <select name="font-size-unit">
-                                    <option value="px" <?= strpos($element['font_size'], 'px') !== false ? 'selected' : '' ?>>px</option>
-                                    <option value="em" <?= strpos($element['font_size'], 'em') !== false ? 'selected' : '' ?>>em</option>
-                                    <option value="rem" <?= strpos($element['font_size'], 'rem') !== false ? 'selected' : '' ?>>rem</option>
-                                    <option value="%" <?= strpos($element['font_size'], '%') !== false ? 'selected' : '' ?>>%</option>
+                                    <option value="px">px</option>
+                                    <option value="em">em</option>
+                                    <option value="rem">rem</option>
+                                    <option value="%">%</option>
                                 </select><br>
 
-                                <button type="submit">Save</button>
-                                <button type="button" class="close-btn" data-id="<?= $element['id'] ?>">Cancel</button>
+                                <button type="submit">Update Section</button>
                             </form>
+
                         </div>
                     </div>
                 <?php endforeach; ?>
             </div>
         </div>
 
-        <!-- Section Modal (for editing section name) -->
-        <div class="modal" id="sectionModal<?= $section['id'] ?>">
-            <div class="modal-content">
-            <p><?= htmlspecialchars($section['name']) ?></p><p style="font-size: 10px;">(SID: <?= $section['id'] ?>)</p>
-            <form action="update-section.php" method="POST">
-                <input type="hidden" name="id" value="<?php echo $section['id'] ?>">
-                <input type="hidden" name="page_id" value="<?php echo $page_id ?>">
-                <input type="hidden" name="type" value="<?php echo $section['type']?>"><br>
-                <input type="hidden" name="parent_id" value="<?php echo $section['parent_id'] ?>"><br>
-                <label>Name:</label><input type="text" name="name" value="<?php echo $section['name']?>" disabled><br>
-                
-                <label>Width:</label><input type="text" name="width" value="<?php echo $section['width'] ?>"><br>
-                <label>Height:</label><input type="text" name="height" value="<?php echo $section['height']?>"><br>
-                <label>Align Items:</label><input type="text" name="align_items" value="<?php echo $section['align_items']?>"><br>
-                <label>Justify Content:</label><input type="text" name="justify_content" value="<?php echo $section['justify_content']?>"><br>
-                <label>Padding:</label><input type="text" name="padding" value="<?php echo $section['padding']?>"><br>
-                <label>Margin:</label><input type="text" name="margin" value="<?php echo $section['margin']?>"><br>
-                <label>Background Color:</label><input type="text" name="background_color" value="<?php echo $section['background_color'] ?>"><br>
-                <label>Border Value:</label><input type="text" name="border_value" value="<?php echo $section['border_value'] ?>"><br>
-                <label>Border Style:</label><input type="text" name="border_style" value="<?php echo $section['border_style']?>"><br>
-                <label>Border Color:</label><input type="text" name="border_color" value="<?php echo $section['border_color']?>"><br>
-                <label>Border Radius:</label><input type="text" name="border_radius" value="<?php echo $section['border_radius']?>"><br>
-                <label>Flex Direction:</label><input type="text" name="flex_direction" value="<?php echo $section['flex_direction']?>"><br>
 
-                <label for="font-family">Font Family:</label>
-                <select id="font-family" name="font-family">
-                    <option value="Arial">Arial</option>
-                    <option value="Verdana">Verdana</option>
-                    <option value="Times New Roman">Times New Roman</option>
-                    <option value="Georgia">Georgia</option>
-                    <option value="Courier New">Courier New</option>
-                </select><br>
+        <?php
+        // Fetch sections for the specific page
+        $query = "SELECT * FROM sections WHERE page_id = ? ORDER BY parent_id, created_at";
+        $stmt = $mysqli->prepare($query);
+        $stmt->bind_param('i', $page_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $sections = $result->fetch_all(MYSQLI_ASSOC);
 
-                <label for="font-size">Font Size:</label>
-                <input type="number" id="font-size" name="font-size" value="16">
-                <select name="font-size-unit">
-                    <option value="px">px</option>
-                    <option value="em">em</option>
-                    <option value="rem">rem</option>
-                    <option value="%">%</option>
-                </select><br>
+        // Fetch all section elements (we’ll filter them after)
+        $elementsQuery = "SELECT * FROM section_elements";
+        $elementsResult = $mysqli->query($elementsQuery);
+        $section_elements = $elementsResult->fetch_all(MYSQLI_ASSOC);
 
-                <button type="submit">Update Section</button>
-            </form>
-
-            </div>
-        </div>
-    <?php endforeach; ?>
-</div>
-
-
-    </div>
-
-
-
-            <?php 
-
-// Fetch sections for the specific page
-$query = "SELECT * FROM sections WHERE page_id = ? ORDER BY parent_id, created_at";
-$stmt = $mysqli->prepare($query);
-$stmt->bind_param('i', $page_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$sections = $result->fetch_all(MYSQLI_ASSOC);
-
-// Fetch all section elements (we’ll filter them after)
-$elementsQuery = "SELECT * FROM section_elements";
-$elementsResult = $mysqli->query($elementsQuery);
-$section_elements = $elementsResult->fetch_all(MYSQLI_ASSOC);
-
-// Group sections by parent_id
-function groupSectionsByParent($sections) {
-    $grouped = [];
-    foreach ($sections as $section) {
-        $parent = $section['parent_id'] ?? 0;
-        $grouped[$parent][] = $section;
-    }
-    return $grouped;
-}
-
-// Group section elements by section_id (filtered to only sections in this page)
-function groupElementsBySection($elements, $sections) {
-    $valid_section_ids = array_column($sections, 'id');
-    $grouped = [];
-    foreach ($elements as $el) {
-        if (in_array($el['section_id'], $valid_section_ids)) {
-            $grouped[$el['section_id']][] = $el;
+        // Group sections by parent_id
+        function groupSectionsByParent($sections)
+        {
+            $grouped = [];
+            foreach ($sections as $section) {
+                $parent = $section['parent_id'] ?? 0;
+                $grouped[$parent][] = $section;
+            }
+            return $grouped;
         }
-    }
-    return $grouped;
-}
 
-// Renders the elements in each section
-function renderElements($section_id, $grouped_elements) {
-    if (!isset($grouped_elements[$section_id])) return '';
-
-    $html = '';
-    foreach ($grouped_elements[$section_id] as $el) {
-        $style = 'style="width: ' . htmlspecialchars($el['width']) . ';
-                         height: ' . htmlspecialchars($el['height']) . ';
-                         padding: ' . htmlspecialchars($el['padding']) . ';
-                         margin: ' . htmlspecialchars($el['margin']) . ';
-                         border: ' . htmlspecialchars($el['border']) . ';
-                         border-radius: ' . htmlspecialchars($el['border_radius']) . ';
-                         text-align: ' . htmlspecialchars($el['alignment']) . ';
-                         font-family: ' . htmlspecialchars($el['font_family']) . ';
-                         font-size: ' . htmlspecialchars($el['font_size']) . ';"';
-
-        switch ($el['element_type']) {
-            case 'text':
-                $html .= '<p ' . $style . '>' . htmlspecialchars($el['content']) . '</p>';
-                break;
-            case 'textfield':
-                $html .= '<input type="text" value="' . htmlspecialchars($el['content']) . '" ' . $style . ' />';
-                break;
-            case 'button':
-                $html .= '<button ' . $style . '>' . htmlspecialchars($el['content']) . '</button>';
-                break;
-            case 'link':
-                $html .= '<a href="' . htmlspecialchars($el['content']) . '" ' . $style . '>' . htmlspecialchars($el['content']) . '</a>';
-                break;
-            case 'image':
-                $html .= '<img src="' . htmlspecialchars($el['content']) . '" alt="Image" ' . $style . ' />';
-                break;
-            default:
-                $html .= '<div ' . $style . '>Unknown element type</div>';
-                break;
+        // Group section elements by section_id (filtered to only sections in this page)
+        function groupElementsBySection($elements, $sections)
+        {
+            $valid_section_ids = array_column($sections, 'id');
+            $grouped = [];
+            foreach ($elements as $el) {
+                if (in_array($el['section_id'], $valid_section_ids)) {
+                    $grouped[$el['section_id']][] = $el;
+                }
+            }
+            return $grouped;
         }
-    }
 
-    return $html;
-}
+        // Renders the elements in each section
+        function renderElements($section_id, $grouped_elements)
+        {
+            if (!isset($grouped_elements[$section_id])) return '';
 
-// Renders the sections and recursively their child sections and elements
-function renderSections($parent_id, $grouped_sections, $grouped_elements) {
-    if (!isset($grouped_sections[$parent_id])) return '';
+            $html = '';
+            foreach ($grouped_elements[$section_id] as $el) {
+                $style = 'style="width: ' . htmlspecialchars($el['width']) . ';
+                            height: ' . htmlspecialchars($el['height']) . ';
+                            padding: ' . htmlspecialchars($el['padding']) . ';
+                            margin: ' . htmlspecialchars($el['margin']) . ';
+                            border: ' . htmlspecialchars($el['border']) . ';
+                            border-radius: ' . htmlspecialchars($el['border_radius']) . ';
+                            text-align: ' . htmlspecialchars($el['alignment']) . ';
+                            font-family: ' . htmlspecialchars($el['font_family']) . ';
+                            font-size: ' . htmlspecialchars($el['font_size']) . ';"';
 
-    $html = '';
-    foreach ($grouped_sections[$parent_id] as $section) {
-        $html .= '<div class="' . htmlspecialchars($section['name']) . '" 
-            style="width: ' . htmlspecialchars($section['width']) . ';
-                   height: ' . htmlspecialchars($section['height']) . ';
-                   background-color: ' . htmlspecialchars($section['background_color']) . ';
-                   padding: ' . htmlspecialchars($section['padding']) . ';
-                   margin: ' . htmlspecialchars($section['margin']) . ';
-                   border: ' . htmlspecialchars($section['border_value']) . ' ' . htmlspecialchars($section['border_style']) . ' ' . htmlspecialchars($section['border_color']) . ';
-                   border-radius: ' . htmlspecialchars($section['border_radius']) . ';
-                   display: flex;
-                   flex-direction: ' . htmlspecialchars($section['flex_direction']) . ';
-                   align-items: ' . htmlspecialchars($section['align_items']) . ';
-                   justify-content: ' . htmlspecialchars($section['justify_content']) . ';
-                   min-height: 50px;">';
+                switch ($el['element_type']) {
+                    case 'text':
+                        $html .= '<p ' . $style . '>' . htmlspecialchars($el['content']) . '</p>';
+                        break;
+                    case 'textfield':
+                        $html .= '<input type="text" value="' . htmlspecialchars($el['content']) . '" ' . $style . ' />';
+                        break;
+                    case 'button':
+                        $html .= '<button ' . $style . '>' . htmlspecialchars($el['content']) . '</button>';
+                        break;
+                    case 'link':
+                        $html .= '<a href="' . htmlspecialchars($el['content']) . '" ' . $style . '>' . htmlspecialchars($el['content']) . '</a>';
+                        break;
+                    case 'image':
+                        $html .= '<img src="' . htmlspecialchars($el['content']) . '" alt="Image" ' . $style . ' />';
+                        break;
+                    default:
+                        $html .= '<div ' . $style . '>Unknown element type</div>';
+                        break;
+                }
+            }
 
-        // $html .= '<strong>' . htmlspecialchars($section['name']) . '</strong>';
-        $html .= renderElements($section['id'], $grouped_elements);
-        $html .= renderSections($section['id'], $grouped_sections, $grouped_elements);
-        $html .= '</div>';
-    }
+            return $html;
+        }
 
-    return $html;
-}
+        // Renders the sections and recursively their child sections and elements
+        function renderSections($parent_id, $grouped_sections, $grouped_elements)
+        {
+            if (!isset($grouped_sections[$parent_id])) return '';
+
+            $html = '';
+            foreach ($grouped_sections[$parent_id] as $section) {
+                $html .= '<div class="' . htmlspecialchars($section['name']) . '" 
+                style="width: ' . htmlspecialchars($section['width']) . ';
+                    height: ' . htmlspecialchars($section['height']) . ';
+                    background-color: ' . htmlspecialchars($section['background_color']) . ';
+                    padding: ' . htmlspecialchars($section['padding']) . ';
+                    margin: ' . htmlspecialchars($section['margin']) . ';
+                    border: ' . htmlspecialchars($section['border_value']) . ' ' . htmlspecialchars($section['border_style']) . ' ' . htmlspecialchars($section['border_color']) . ';
+                    border-radius: ' . htmlspecialchars($section['border_radius']) . ';
+                    display: flex;
+                    flex-direction: ' . htmlspecialchars($section['flex_direction']) . ';
+                    align-items: ' . htmlspecialchars($section['align_items']) . ';
+                    justify-content: ' . htmlspecialchars($section['justify_content']) . ';
+                    min-height: 50px;">';
+
+                // $html .= '<strong>' . htmlspecialchars($section['name']) . '</strong>';
+                $html .= renderElements($section['id'], $grouped_elements);
+                $html .= renderSections($section['id'], $grouped_sections, $grouped_elements);
+                $html .= '</div>';
+            }
+
+            return $html;
+        }
 
 
-$grouped_sections = groupSectionsByParent($sections);
-$grouped_elements = groupElementsBySection($section_elements, $sections);
-?>
+        $grouped_sections = groupSectionsByParent($sections);
+        $grouped_elements = groupElementsBySection($section_elements, $sections);
+        ?>
+        <!-- End here for the php line 353-->
+
+
 
         <div class="viewing" id="viewing-area">
             <?= renderSections(0, $grouped_sections, $grouped_elements) ?>
@@ -481,7 +490,6 @@ $grouped_elements = groupElementsBySection($section_elements, $sections);
             <div id="insert" class="tab-content active" style="display: block;">
                 <button id="add-element-btn" class="buttonbox">Add Section</button>
                 <button onclick="openModal()" class="buttonbox">Add Block</button>
-                
             </div>
 
             <div id="section-modal" class="modal">
@@ -490,6 +498,8 @@ $grouped_elements = groupElementsBySection($section_elements, $sections);
                     <h2>Create Section</h2>
                     <form id="section-form" action="save_section.php" method="POST" enctype="multipart/form-data">
                         <input type="hidden" name="page_id" value="<?php echo $page_id; ?>">
+
+
                         <label for="section-name">Section Name:</label>
                         <input type="text" id="section-name" name="section-name" required>
 
@@ -497,23 +507,19 @@ $grouped_elements = groupElementsBySection($section_elements, $sections);
                         $page_id = $_GET['id'];
                         if ($page_id) {
                             $mysqli = new mysqli("localhost", "root", "", "z");
-
                             if ($mysqli->connect_error) {
                                 die("Connection failed: " . $mysqli->connect_error);
                             }
-
                             $query = "SELECT id, name FROM sections WHERE page_id = ?";
                             $stmt = $mysqli->prepare($query);
                             $stmt->bind_param("i", $page_id);
                             $stmt->execute();
                             $result = $stmt->get_result();
-
                             // Store the section names in an array for the dropdown
                             $sections = [];
                             while ($row = $result->fetch_assoc()) {
                                 $sections[] = $row;
                             }
-
                             $stmt->close();
                         } else {
                             // Handle the case where page_id is not provided
@@ -531,7 +537,6 @@ $grouped_elements = groupElementsBySection($section_elements, $sections);
 
                         <label for="section-bg">Background Color:</label>
                         <input type="color" id="section-bg" name="section-bg" value="#ffffff"><br>
-
                         <label for="section-width">Width:</label>
                         <input type="number" id="section-width" name="section-width" value="100">
                         <select name="width-unit">
@@ -548,7 +553,7 @@ $grouped_elements = groupElementsBySection($section_elements, $sections);
                             <option>px</option>
                             <option>rem</option>
                         </select><br>
-                        
+
                         <label for="flex-direction">flex-direction:</label>
                         <select name="flex-direction" id="flex-direction">
                             <option>row</option>
@@ -608,6 +613,7 @@ $grouped_elements = groupElementsBySection($section_elements, $sections);
                                 <option>dashed</option>
                             </select>
                             <input type="color" name="border-color">
+
                             <label>Border Radius:</label>
                             <input type="number" name="border-radius-value" value="0">
                             <select name="border-radius-unit">
@@ -618,172 +624,173 @@ $grouped_elements = groupElementsBySection($section_elements, $sections);
 
                         <button type="submit" class="create-section-btn" id="save_in_db">Create Section</button>
                     </form>
-                    </div>
                 </div>
             </div>
-            
 
-                <!-- Modal -->
-                <div class="modal-overlay" id="elementModal">
-                    <div class="modal-box">
-                        <form action="save_element.php" method="POST">
-                            <input type="hidden" name="page_id" value="<?php echo $page_id; ?>">
-                            <h2>Add Element</h2>
 
-                            <label>Section ID</label>
-                            <select type="number" name="section_id" required>
+
+            <div class="modal-overlay" id="elementModal">
+                <div class="modal-box">
+                    <form action="save_element.php" method="POST">
+                        <input type="hidden" name="page_id" value="<?php echo $page_id; ?>">
+                        <h2>Add Elements</h2>
+
+                        <label>Section ID</label>
+                        <select type="number" name="section_id" required>
                             <?php foreach ($sections as $section): ?>
                                 <option value="<?php echo htmlspecialchars($section['id']); ?>"><?php echo htmlspecialchars($section['name']); ?></option>
                             <?php endforeach; ?>
-                            </select>
-                            <label>Element Type</label>
-                            <select name="element_type">
-                                <option value="button">Button</option>
-                                <option value="text">Text</option>
-                                <option value="textfield">Textfield</option>
-                                <option value="link">Link</option>
-                                <option value="image">Image</option>
-                            </select>
+                        </select>
 
-                            <label>Content</label>
-                            <input type="text" name="content" required>
+                        <label>Element Type</label>
+                        <select name="element_type">
+                            <option value="button">Button</option>
+                            <option value="text">Text</option>
+                            <option value="textfield">Textfield</option>
+                            <option value="link">Link</option>
+                            <option value="image">Image</option>
+                        </select>
 
-                            <label>Width</label>
-                            <input type="text" name="width" value="100px">
+                        <label>Content</label>
+                        <input type="text" name="content" required>
 
-                            <label>Height</label>
-                            <input type="text" name="height" value="40px">
+                        <label>Width</label>
+                        <input type="text" name="width" value="100px">
 
-                            <label>Alignment</label>
-                            <input type="text" name="alignment" value="left">
+                        <label>Height</label>
+                        <input type="text" name="height" value="40px">
 
-                            <label>Padding</label>
-                            <input type="text" name="padding" value="5px">
+                        <label>Alignment</label>
+                        <input type="text" name="alignment" value="left">
 
-                            <label>Margin</label>
-                            <input type="text" name="margin" value="5px">
+                        <label>Padding</label>
+                        <input type="text" name="padding" value="5px">
 
-                            <label>Border</label>
-                            <input type="text" name="border" value="1px solid #000">
+                        <label>Margin</label>
+                        <input type="text" name="margin" value="5px">
 
-                            <label>Border Radius</label>
-                            <input type="text" name="border_radius" value="5px">
+                        <label>Border</label>
+                        <input type="text" name="border" value="1px solid #000">
 
-                            <label for="font-family">Font Family:</label>
-                            <select id="font-family" name="font-family">
-                                <option value="Arial">Arial</option>
-                                <option value="Verdana">Verdana</option>
-                                <option value="Times New Roman">Times New Roman</option>
-                                <option value="Georgia">Georgia</option>
-                                <option value="Courier New">Courier New</option>
-                            </select><br>
+                        <label>Border Radius</label>
+                        <input type="text" name="border_radius" value="5px">
 
-                            <label for="font-size">Font Size:</label>
-                            <input type="number" id="font-size" name="font-size" value="16">
-                            <select name="font-size-unit">
-                                <option value="px">px</option>
-                                <option value="em">em</option>
-                                <option value="rem">rem</option>
-                                <option value="%">%</option>
-                            </select><br>
+                        <label for="font-family">Font Family:</label>
+                        <select id="font-family" name="font-family">
+                            <option value="Arial">Arial</option>
+                            <option value="Verdana">Verdana</option>
+                            <option value="Times New Roman">Times New Roman</option>
+                            <option value="Georgia">Georgia</option>
+                            <option value="Courier New">Courier New</option>
+                        </select><br>
 
-                            <button type="submit">Save</button>
-                            <button type="button" onclick="closeModal()">Cancel</button>
-                        </form>
-                    </div>
+                        <label for="font-size">Font Size:</label>
+                        <input type="number" id="font-size" name="font-size" value="16">
+                        <select name="font-size-unit">
+                            <option value="px">px</option>
+                            <option value="em">em</option>
+                            <option value="rem">rem</option>
+                            <option value="%">%</option>
+                        </select><br>
+
+                        <button type="submit">Save</button>
+                        <button type="button" onclick="closeModal()">Cancel</button>
+                    </form>
                 </div>
+            </div>
+
             <div id="pages" class="tab-content">
                 <!-- Image Insert Form -->
                 <h3>Insert Image</h3>
                 <form action="insert_image.php" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="page_id" value="<?php echo $page_id; ?>">
-                <!-- Section ID -->
-                <div class="form-group">
-                <label>Section ID</label>
-                            <select type="number" name="section_id" required>
+                    <!-- Section ID -->
+                    <div class="form-group">
+                        <label>Section ID</label>
+                        <select type="number" name="section_id" required>
                             <?php foreach ($sections as $section): ?>
                                 <option value="<?php echo htmlspecialchars($section['id']); ?>"><?php echo htmlspecialchars($section['name']); ?></option>
                             <?php endforeach; ?>
-                            </select>
-  </div>
+                        </select>
+                    </div>
 
-  <!-- Image File -->
-  <div class="form-group">
-    <label for="image">Choose Image</label>
-    <input type="file" id="image" name="image" accept="image/*" required>
-  </div>
+                    <!-- Image File -->
+                    <div class="form-group">
+                        <label for="image">Choose Image</label>
+                        <input type="file" id="image" name="image" accept="image/*" required>
+                    </div>
 
-  <!-- Width -->
-  <div class="form-group">
-    <label for="width">Width</label>
-    <input type="text" id="width" name="width" placeholder="e.g. 100px or 100%" required>
-  </div>
+                    <!-- Width -->
+                    <div class="form-group">
+                        <label for="width">Width</label>
+                        <input type="text" id="width" name="width" placeholder="e.g. 100px or 100%" required>
+                    </div>
 
-  <!-- Height -->
-  <div class="form-group">
-    <label for="height">Height</label>
-    <input type="text" id="height" name="height" placeholder="e.g. 200px or auto" required>
-  </div>
+                    <!-- Height -->
+                    <div class="form-group">
+                        <label for="height">Height</label>
+                        <input type="text" id="height" name="height" placeholder="e.g. 200px or auto" required>
+                    </div>
 
-  <!-- Submit Button -->
-  <button type="submit" class="button">Save Image</button>
-</form>
+                    <!-- Submit Button -->
+                    <button type="submit" class="button">Save Image</button>
+                </form>
 
-<style>
-  .form-group {
-    margin-bottom: 12px;
-  }
+                <style>
+                    .form-group {
+                        margin-bottom: 12px;
+                    }
 
-  label {
-    display: block;
-    margin-bottom: 4px;
-  }
+                    label {
+                        display: block;
+                        margin-bottom: 4px;
+                    }
 
-  input {
-    width: 100%;
-    padding: 6px;
-    box-sizing: border-box;
-  }
+                    input {
+                        width: 100%;
+                        padding: 6px;
+                        box-sizing: border-box;
+                    }
 
-  .button {
-    padding: 8px 14px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
-  }
+                    .button {
+                        padding: 8px 14px;
+                        background-color: #28a745;
+                        color: white;
+                        border: none;
+                        cursor: pointer;
+                        border-radius: 4px;
+                    }
 
-  .button:hover {
-    background-color: #218838;
-  }
-</style>
+                    .button:hover {
+                        background-color: #218838;
+                    }
+                </style>
 
             </div>
             <div id="settings" class="tab-content">
                 <p>Tab3</p>
             </div>
         </aside>
-
     </main>
 </body>
+
+
+
 <script>
-function openTab(event, tabName) {
-    const tabcontent = document.getElementsByClassName("tab-content");
-    for (let i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].style.display = "none";
+    function openTab(event, tabName) {
+        const tabcontent = document.getElementsByClassName("tab-content");
+        for (let i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+
+        const tablinks = document.getElementsByClassName("tab-button");
+        for (let i = 0; i < tablinks.length; i++) {
+            tablinks[i].classList.remove("active");
+        }
+
+        document.getElementById(tabName).style.display = "block";
+        event.currentTarget.classList.add("active");
     }
-
-    const tablinks = document.getElementsByClassName("tab-button");
-    for (let i = 0; i < tablinks.length; i++) {
-        tablinks[i].classList.remove("active");
-    }
-
-    document.getElementById(tabName).style.display = "block";
-    event.currentTarget.classList.add("active");
-}
-
-
 </script>
 <script>
     function openModal() {
@@ -799,78 +806,81 @@ function openTab(event, tabName) {
     });
 </script>
 <script>
-    document.getElementById('add-element-btn').addEventListener('click', function () {
-  document.getElementById('section-modal').style.display = 'block';
-});
+    document.getElementById('add-element-btn').addEventListener('click', function() {
+        document.getElementById('section-modal').style.display = 'block';
+    });
 
-// Close modal when clicking X
-document.querySelector('.close-btn').addEventListener('click', function () {
-  document.getElementById('section-modal').style.display = 'none';
-});
-
-
-  document.getElementById('section-type').addEventListener('change', function () {
-    const parentSelector = document.getElementById('parent-selector');
-    if (this.value === 'child') {
-      parentSelector.style.display = 'block';
-    } else {
-      parentSelector.style.display = 'none';
-    }
-  });
+    // Close modal when clicking X
+    document.querySelector('.close-btn').addEventListener('click', function() {
+        document.getElementById('section-modal').style.display = 'none';
+    });
 
 
+    document.getElementById('section-type').addEventListener('change', function() {
+        const parentSelector = document.getElementById('parent-selector');
+        if (this.value === 'child') {
+            parentSelector.style.display = 'block';
+        } else {
+            parentSelector.style.display = 'none';
+        }
+    });
 
-  document.getElementById("save_in_db").addEventListener("click", function(event){
-    if (!form.checkValidity()) {
-    e.preventDefault(); // stops submission if validation fails
-    alert("Please fill all required fields");
-  }else {document.getElementById("section-form").submit();}
-    
-    
-});
+
+
+    document.getElementById("save_in_db").addEventListener("click", function(event) {
+        if (!form.checkValidity()) {
+            e.preventDefault(); // stops submission if validation fails
+            alert("Please fill all required fields");
+        } else {
+            document.getElementById("section-form").submit();
+        }
+
+
+    });
 </script>
 <script>
-    document.getElementById('add-element-btn').addEventListener('click', function () {
-  document.getElementById('section-modal').style.display = 'block';
-});
+    document.getElementById('add-element-btn').addEventListener('click', function() {
+        document.getElementById('section-modal').style.display = 'block';
+    });
 
-// Close modal when clicking X
-document.querySelector('.close-btn').addEventListener('click', function () {
-  document.getElementById('section-modal').style.display = 'none';
-});
-document.addEventListener('keydown', function(e) {
+    // Close modal when clicking X
+    document.querySelector('.close-btn').addEventListener('click', function() {
+        document.getElementById('section-modal').style.display = 'none';
+    });
+    document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             document.getElementById('section-modal').style.display = 'none';
         }
     });
 </script>
-<script>
-
-</script>
-
 <style>
     .tab-content {
         display: none;
         border-top: none;
     }
+
     .tab-button {
         border: none;
         outline: none;
         cursor: pointer;
         padding: 10px 15px;
     }
+
     .tab-button.active {
         border-bottom: 2px solid #000;
         color: #000;
     }
+
     .tab-content.active {
         display: block;
     }
+
     .tabs {
         display: flex;
         justify-content: space-between;
         border-bottom: 1px solid #ccc;
     }
+
     .tabs button {
         flex: 1;
         padding: 10px;
@@ -879,60 +889,62 @@ document.addEventListener('keydown', function(e) {
         cursor: pointer;
         transition: background-color 0.3s ease;
     }
+
     .tabs button:hover {
         background-color: #ddd;
     }
-    
-    
-
 </style>
 <style>
-        /* Modal Background */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%;height: 100%;
-            background: rgba(0,0,0,0.5);
-            justify-content: center;
-            align-items: center;
-        }
+    /* Modal Background */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+    }
 
-        /* Modal Box */
-        .modal-box {
-            overflow-y: scroll;
-            height: 80vh;
-            background: #fff;
-            padding: 20px;
-            width: 400px; height: 90vh;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
-        }
+    /* Modal Box */
+    .modal-box {
+        overflow-y: scroll;
+        height: 80vh;
+        background: #fff;
+        padding: 20px;
+        width: 400px;
+        height: 90vh;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    }
 
-        .modal-box h2 {
-            margin-top: 0;
-        }
+    .modal-box h2 {
+        margin-top: 0;
+    }
 
-        .modal-box input, .modal-box select {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-        }
+    .modal-box input,
+    .modal-box select {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+    }
 
-        .modal-box button {
-            padding: 8px 12px;
-            margin-top: 5px;
-        }
+    .modal-box button {
+        padding: 8px 12px;
+        margin-top: 5px;
+    }
 
-        .modal-open {
-            display: flex;
-        }
-
+    .modal-open {
+        display: flex;
+    }
 </style>
 <style>
- /* Modal background */
- .modal {
-        display: none; /* Hidden by default */
+    /* Modal background */
+    .modal {
+        display: none;
+        /* Hidden by default */
         position: fixed;
         top: 0;
         left: 0;
@@ -977,29 +989,29 @@ document.addEventListener('keydown', function(e) {
 </style>
 
 <style>
-/* Basic Styling */
-.container {
-    margin-top: 20px;
-    overflow-y:auto;
-    height:85vh;
-}
+    /* Basic Styling */
+    .container {
+        margin-top: 20px;
+        overflow-y: auto;
+        height: 85vh;
+    }
 
-.card-header {
-    font-size: 1.25rem;
-    font-weight: bold;
-}
+    .card-header {
+        font-size: 1.25rem;
+        font-weight: bold;
+    }
 
-.card-body {
-    padding: 15px;
-}
+    .card-body {
+        padding: 15px;
+    }
 
-.card {
+    .card {
         /* border-radius: 10px; */
-    border-bottom: 1px solid #ccc;
-}
+        border-bottom: 1px solid #ccc;
+    }
 
-/* Modal Styling */
-/* .modal {
+    /* Modal Styling */
+    /* .modal {
     display: none;
     position: fixed;
     z-index: 1000;
@@ -1019,100 +1031,98 @@ document.addEventListener('keydown', function(e) {
     width: 50%;
 } */
 
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-.close-btn {
-    font-size: 1.5rem;
-    cursor: pointer;
-}
+    .close-btn {
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
 
-.modal-body {
-    margin-top: 15px;
+    .modal-body {
+        margin-top: 15px;
 
-}
+    }
 
-.modal-footer {
-    margin-top: 20px;
-    display: flex;
-    justify-content: flex-end;
-}
+    .modal-footer {
+        margin-top: 20px;
+        display: flex;
+        justify-content: flex-end;
+    }
 
-/* button {
+    /* button {
     margin: 0 5px;
 } */
-
 </style>
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    // Open modal when Edit button is clicked
-    const editButtons = document.querySelectorAll('.edit-button');
-    editButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const modalId = `#editModal${this.getAttribute('data-id')}`;
-            const modal = document.querySelector(modalId);
-            modal.style.display = 'flex';  // Show the modal
+    document.addEventListener("DOMContentLoaded", function() {
+        // Open modal when Edit button is clicked
+        const editButtons = document.querySelectorAll('.edit-button');
+        editButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const modalId = `#editModal${this.getAttribute('data-id')}`;
+                const modal = document.querySelector(modalId);
+                modal.style.display = 'flex'; // Show the modal
+            });
+        });
+
+        // Close modal when close button is clicked
+        const closeButtons = document.querySelectorAll('.close-btn');
+        closeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const modalId = `#editModal${this.getAttribute('data-id')}`;
+                const modal = document.querySelector(modalId);
+                modal.style.display = 'none'; // Hide the modal
+            });
+        });
+
+        // Close modal when clicked outside the modal content
+        window.addEventListener('click', function(event) {
+            if (event.target.classList.contains('modal')) {
+                const modal = event.target;
+                modal.style.display = 'none';
+            }
         });
     });
 
-    // Close modal when close button is clicked
-    const closeButtons = document.querySelectorAll('.close-btn');
-    closeButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const modalId = `#editModal${this.getAttribute('data-id')}`;
-            const modal = document.querySelector(modalId);
-            modal.style.display = 'none';  // Hide the modal
+
+    document.addEventListener("DOMContentLoaded", () => {
+        // Handle element modals
+        document.querySelectorAll('.edit-element-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const id = button.dataset.id;
+                document.getElementById(`editModal${id}`).style.display = 'flex';
+            });
+        });
+
+        // Handle section modals
+        document.querySelectorAll('.edit-section-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const id = button.dataset.id;
+                document.getElementById(`sectionModal${id}`).style.display = 'flex';
+            });
+        });
+
+        // Close any modal
+        document.querySelectorAll('.close-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.dataset.id;
+                const type = btn.dataset.type;
+                const modalId = type === "section" ? `sectionModal${id}` : `editModal${id}`;
+                document.getElementById(modalId).style.display = 'none';
+            });
+        });
+
+        // Close modal if clicked outside content
+        window.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                e.target.style.display = 'none';
+            }
         });
     });
-
-    // Close modal when clicked outside the modal content
-    window.addEventListener('click', function(event) {
-        if (event.target.classList.contains('modal')) {
-            const modal = event.target;
-            modal.style.display = 'none';
-        }
-    });
-});
-
-
-document.addEventListener("DOMContentLoaded", () => {
-    // Handle element modals
-    document.querySelectorAll('.edit-element-btn').forEach(button => {
-        button.addEventListener('click', () => {
-            const id = button.dataset.id;
-            document.getElementById(`editModal${id}`).style.display = 'flex';
-        });
-    });
-
-    // Handle section modals
-    document.querySelectorAll('.edit-section-btn').forEach(button => {
-        button.addEventListener('click', () => {
-            const id = button.dataset.id;
-            document.getElementById(`sectionModal${id}`).style.display = 'flex';
-        });
-    });
-
-    // Close any modal
-    document.querySelectorAll('.close-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const id = btn.dataset.id;
-            const type = btn.dataset.type;
-            const modalId = type === "section" ? `sectionModal${id}` : `editModal${id}`;
-            document.getElementById(modalId).style.display = 'none';
-        });
-    });
-
-    // Close modal if clicked outside content
-    window.addEventListener('click', (e) => {
-        if (e.target.classList.contains('modal')) {
-            e.target.style.display = 'none';
-        }
-    });
-});
-
 </script>
 
 </html>
