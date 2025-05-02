@@ -161,6 +161,210 @@ $stmt->close();
             color: #000;
         }
     </style>
+    <style>
+    .tab-content {
+        display: none;
+        border-top: none;
+    }
+
+    .tab-button {
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 10px 15px;
+    }
+
+    .tab-button.active {
+        border-bottom: 2px solid #000;
+        color: #000;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    .tabs {
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid #ccc;
+    }
+
+    .tabs button {
+        flex: 1;
+        padding: 10px;
+        text-align: center;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .tabs button:hover {
+        background-color: #ddd;
+    }
+</style>
+<style>
+    /* Modal Background */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Modal Box */
+    .modal-box {
+        overflow-y: scroll;
+        height: 80vh;
+        background: #fff;
+        padding: 20px;
+        width: 400px;
+        height: 90vh;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-box h2 {
+        margin-top: 0;
+    }
+
+    .modal-box input,
+    .modal-box select {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+    }
+
+    .modal-box button {
+        padding: 8px 12px;
+        margin-top: 5px;
+    }
+
+    .modal-open {
+        display: flex;
+    }
+</style>
+<style>
+    /* Modal background */
+    .modal {
+        display: none;
+        /* Hidden by default */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+    }
+
+    /* Modal content */
+    .modal-content {
+        position: absolute;
+        overflow-y: scroll;
+        height: 80vh;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        width: 300px;
+    }
+
+    /* Close button */
+    .close-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    /* Button for selecting element */
+    .element-option {
+        width: 100%;
+        padding: 10px;
+        margin: 5px 0;
+        text-align: left;
+        cursor: pointer;
+    }
+</style>
+
+<style>
+    /* Basic Styling */
+    .container {
+        margin-top: 20px;
+        overflow-y: auto;
+        height: 85vh;
+    }
+
+    .card-header {
+        font-size: 1.25rem;
+        font-weight: bold;
+    }
+
+    .card-body {
+        padding: 15px;
+    }
+
+    .card {
+        /* border-radius: 10px; */
+        border-bottom: 1px solid #ccc;
+    }
+
+    /* Modal Styling */
+    /* .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 50%;
+} */
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .close-btn {
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    .modal-body {
+        margin-top: 15px;
+
+    }
+
+    .modal-footer {
+        margin-top: 20px;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    /* button {
+    margin: 0 5px;
+} */
+</style>
 </head>
 
 
@@ -853,210 +1057,6 @@ $stmt->close();
         }
     });
 </script>
-<style>
-    .tab-content {
-        display: none;
-        border-top: none;
-    }
-
-    .tab-button {
-        border: none;
-        outline: none;
-        cursor: pointer;
-        padding: 10px 15px;
-    }
-
-    .tab-button.active {
-        border-bottom: 2px solid #000;
-        color: #000;
-    }
-
-    .tab-content.active {
-        display: block;
-    }
-
-    .tabs {
-        display: flex;
-        justify-content: space-between;
-        border-bottom: 1px solid #ccc;
-    }
-
-    .tabs button {
-        flex: 1;
-        padding: 10px;
-        text-align: center;
-        border: none;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-    .tabs button:hover {
-        background-color: #ddd;
-    }
-</style>
-<style>
-    /* Modal Background */
-    .modal-overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        justify-content: center;
-        align-items: center;
-    }
-
-    /* Modal Box */
-    .modal-box {
-        overflow-y: scroll;
-        height: 80vh;
-        background: #fff;
-        padding: 20px;
-        width: 400px;
-        height: 90vh;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-    }
-
-    .modal-box h2 {
-        margin-top: 0;
-    }
-
-    .modal-box input,
-    .modal-box select {
-        width: 100%;
-        padding: 8px;
-        margin-bottom: 10px;
-    }
-
-    .modal-box button {
-        padding: 8px 12px;
-        margin-top: 5px;
-    }
-
-    .modal-open {
-        display: flex;
-    }
-</style>
-<style>
-    /* Modal background */
-    .modal {
-        display: none;
-        /* Hidden by default */
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 1000;
-    }
-
-    /* Modal content */
-    .modal-content {
-        position: absolute;
-        overflow-y: scroll;
-        height: 80vh;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        width: 300px;
-    }
-
-    /* Close button */
-    .close-btn {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        font-size: 20px;
-        cursor: pointer;
-    }
-
-    /* Button for selecting element */
-    .element-option {
-        width: 100%;
-        padding: 10px;
-        margin: 5px 0;
-        text-align: left;
-        cursor: pointer;
-    }
-</style>
-
-<style>
-    /* Basic Styling */
-    .container {
-        margin-top: 20px;
-        overflow-y: auto;
-        height: 85vh;
-    }
-
-    .card-header {
-        font-size: 1.25rem;
-        font-weight: bold;
-    }
-
-    .card-body {
-        padding: 15px;
-    }
-
-    .card {
-        /* border-radius: 10px; */
-        border-bottom: 1px solid #ccc;
-    }
-
-    /* Modal Styling */
-    /* .modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    width: 50%;
-} */
-
-    .modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .close-btn {
-        font-size: 1.5rem;
-        cursor: pointer;
-    }
-
-    .modal-body {
-        margin-top: 15px;
-
-    }
-
-    .modal-footer {
-        margin-top: 20px;
-        display: flex;
-        justify-content: flex-end;
-    }
-
-    /* button {
-    margin: 0 5px;
-} */
-</style>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         // Open modal when Edit button is clicked
