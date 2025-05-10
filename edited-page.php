@@ -1054,6 +1054,8 @@ $stmt->close();
                     </form>
                 </div>
             </div>
+        </div>
+  </div>
 
             <div id="pages" class="tab-content">
                 <!-- Image Insert Form -->
@@ -1123,9 +1125,134 @@ $stmt->close();
                 </style>
 
             </div>
-            <div id="settings" class="tab-content">
-                <p>Tab3</p>
-            </div>
+           <div class="template-selection" style="margin-top: 40px; padding: 10px; border-top: 1px solid #ccc;">
+    <h3>Select a Page Layout Template</h3>
+    <div class="templates-scroll">
+        <div class="template-card">
+            <h4>Template A</h4>
+            <p>Header, Two Columns, Footer</p>
+            <button class="buttonbox" onclick="generateTemplate('A')">Use Template A</button>
+        </div>
+        <div class="template-card">
+            <h4>Template B</h4>
+            <p>Hero + 3 Grid Sections</p>
+            <button class="buttonbox" onclick="generateTemplate('B')">Use Template B</button>
+        </div>
+        <div class="template-card">
+            <h4>Template C</h4>
+            <p>Sidebar + Main Content</p>
+            <button class="buttonbox" onclick="generateTemplate('C')">Use Template C</button>
+
+                 <style>
+        .templates-grid {
+            display: flex;
+            flex-direction: row;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .template-card {
+            flex: 1;
+            min-width: 180px;
+            background: #f7f7f7;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .template-card h4 {
+            margin-bottom: 8px;
+        }
+
+        .template-card button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .template-card button:hover {
+            background-color: #0056b3;
+        }
+         .templates-scroll {
+        display: flex;
+        overflow-x: auto;
+        gap: 16px;
+        padding-bottom: 10px;
+        margin-top: 10px;
+    }
+
+    .template-card {
+        flex: 0 0 220px;
+        background: #f7f7f7;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 12px;
+        text-align: center;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .template-card h4 {
+        margin-bottom: 8px;
+    }
+
+    .template-card button {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .template-card button:hover {
+        background-color: #0056b3;
+    }
+    </style>
+    <script>
+    function generateTemplate(templateId) {
+        const container = document.getElementById("page-content") || document.body;
+
+        if (!container) {
+            alert("Target container not found!");
+            return;
+        }
+
+        if (templateId === 'A') {
+            container.innerHTML += `
+                <section style="background:#eee; padding:20px; margin:10px 0;">Header</section>
+                <section style="display:flex; margin:10px 0;">
+                    <div style="flex:1; padding:10px; background:#fafafa; border:1px solid #ccc;">Left Column</div>
+                    <div style="flex:1; padding:10px; background:#fafafa; border:1px solid #ccc;">Right Column</div>
+                </section>
+                <section style="background:#ddd; padding:20px; margin:10px 0;">Footer</section>
+            `;
+        } else if (templateId === 'B') {
+            container.innerHTML += `
+                <section style="background:#007bff; color:#fff; padding:40px; text-align:center; margin:10px 0;">Hero Section</section>
+                <section style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; padding:20px; margin:10px 0;">
+                    <div style="background:#f0f0f0; padding:20px;">Grid Block 1</div>
+                    <div style="background:#f0f0f0; padding:20px;">Grid Block 2</div>
+                    <div style="background:#f0f0f0; padding:20px;">Grid Block 3</div>
+                </section>
+            `;
+        } else if (templateId === 'C') {
+            container.innerHTML += `
+                <section style="display:flex; margin:10px 0;">
+                    <aside style="width:25%; background:#eee; padding:20px;">Sidebar</aside>
+                    <main style="width:75%; padding:20px; background:#fdfdfd; border-left: 1px solid #ccc;">Main Content</main>
+                </section>
+            `;
+        }
+
+        alert("Template " + templateId + " has been added.");
+    }
+</script>
+           
         </aside>
     </main>
 </body>
