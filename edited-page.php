@@ -376,7 +376,6 @@ $stmt->close();
             </a>
             <?php echo "<img src='{$logo}' width='20'>"; ?>
             <p><?php echo $site_name ?></p>
-            <!-- <p style="font-size:12px;"><?php echo $page_id; ?></p> -->
             <input type="text" id="page-id" value="<?php echo $page_id; ?>">
 
         </div>
@@ -390,6 +389,18 @@ $stmt->close();
 
         </div>
     </div>
+
+    <?php if (isset($_GET['enrollment_success'])): ?>
+    <div class="alert alert-success" style="background-color: #d4edda; color: #155724; padding: 15px; margin: 10px; border-radius: 4px;">
+        Enrollment form submitted successfully!
+    </div>
+    <?php endif; ?>
+
+    <?php if (isset($_GET['enrollment_error'])): ?>
+    <div class="alert alert-danger" style="background-color: #f8d7da; color: #721c24; padding: 15px; margin: 10px; border-radius: 4px;">
+        Error submitting enrollment form: <?php echo htmlspecialchars($_GET['enrollment_error']); ?>
+    </div>
+    <?php endif; ?>
 
     <main>
         <?php
@@ -571,7 +582,7 @@ $stmt->close();
         $result = $stmt->get_result();
         $sections = $result->fetch_all(MYSQLI_ASSOC);
 
-        // Fetch all section elements (we’ll filter them after)
+        // Fetch all section elements (we'll filter them after)
         $elementsQuery = "SELECT * FROM section_elements";
         $elementsResult = $mysqli->query($elementsQuery);
         $section_elements = $elementsResult->fetch_all(MYSQLI_ASSOC);
@@ -607,6 +618,13 @@ $stmt->close();
 
             $html = '';
             foreach ($grouped_elements[$section_id] as $el) {
+                // Skip rendering for empty or default content elements
+                if (
+                    in_array($el['element_type'], ['text', 'textfield', 'button', 'link', 'image']) &&
+                    (trim($el['content']) === '' || $el['content'] === null)
+                ) {
+                    continue;
+                }
                 $style = 'style="width: ' . htmlspecialchars($el['width']) . ';
                             height: ' . htmlspecialchars($el['height']) . ';
                             padding: ' . htmlspecialchars($el['padding']) . ';
@@ -633,12 +651,145 @@ $stmt->close();
                     case 'image':
                         $html .= '<img src="' . htmlspecialchars($el['content']) . '" alt="Image" ' . $style . ' />';
                         break;
+                    case 'enrollment_form':
+                        global $page_id;
+                        $html .= generateEnrollmentForm($el['section_id'], $page_id, $style);
+                        break;
                     default:
                         $html .= '<div ' . $style . '>Unknown element type</div>';
                         break;
                 }
             }
 
+            return $html;
+        }
+
+        // Add the enrollment form generation function
+        function generateEnrollmentForm($section_id, $page_id, $style) {
+            $html = '<form action="save_enrollment.php" method="POST" class="enrollment-form" ' . $style . '>';
+            $html .= '<input type="hidden" name="section_id" value="' . $section_id . '">';
+            $html .= '<input type="hidden" name="page_id" value="' . $page_id . '">';
+            $html .= '<div class="enrollment-container">';
+            $html .= '<h2 style="text-align:center;">Student Enrollment Form</h2>';
+            $html .= '<div class="form-group"><label><b>First Name:</b></label><input type="text" name="first_name" required></div>';
+            $html .= '<div class="form-group"><label><b>Last Name:</b></label><input type="text" name="last_name" required></div>';
+            $html .= '<div class="form-group"><label><b>Date of Birth:</b></label><input type="date" name="date_of_birth" required></div>';
+            $html .= '<div class="form-group"><label><b>Gender:</b></label><select name="gender" required><option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option></select></div>';
+            $html .= '<div class="form-group"><label><b>Email:</b></label><input type="email" name="email" required></div>';
+            $html .= '<div class="form-group"><label><b>Phone:</b></label><input type="tel" name="phone" required></div>';
+            $html .= '<div class="form-group"><label><b>Address:</b></label><textarea name="address" required></textarea></div>';
+            $html .= '<hr>';
+            $html .= '<div class="form-group"><label><b>Previous School:</b></label><input type="text" name="previous_school" required></div>';
+            $html .= '<div class="form-group"><label><b>Last Grade Level:</b></label><input type="text" name="last_grade_level" required></div>';
+            $html .= '<div class="form-group"><label><b>GPA:</b></label><input type="number" name="gpa" step="0.01" min="0" max="4" required></div>';
+            $html .= '<hr>';
+            $html .= '<div class="form-group"><label><b>Guardian Name:</b></label><input type="text" name="guardian_name" required></div>';
+            $html .= '<div class="form-group"><label><b>Relationship:</b></label><input type="text" name="guardian_relationship" required></div>';
+            $html .= '<div class="form-group"><label><b>Guardian Phone:</b></label><input type="tel" name="guardian_phone" required></div>';
+            $html .= '<div class="form-group"><label><b>Guardian Email:</b></label><input type="email" name="guardian_email" required></div>';
+            $html .= '<div class="form-group"><label><b>Guardian Address:</b></label><textarea name="guardian_address" required></textarea></div>';
+            $html .= '<hr>';
+            $html .= '<div class="form-group"><label><b>Course Applied:</b></label><input type="text" name="course_applied" required></div>';
+            $html .= '<div class="form-group"><label><b>Preferred Start Date:</b></label><input type="date" name="preferred_start_date" required></div>';
+            $html .= '<div class="form-group"><label><b>Additional Notes:</b></label><textarea name="additional_notes"></textarea></div>';
+            $html .= '<button type="submit" class="submit-btn">Submit Enrollment</button>';
+            $html .= '</div>';
+            $html .= '</form>';
+            $html .= '<style>
+                body {
+                    background: #f7f8fa;
+                }
+                .enrollment-form {
+                    width: 100vw;
+                    min-height: 100vh;
+                    display: flex;
+                    justify-content: center;
+                    align-items: flex-start;
+                    margin: 0;
+                    padding: 0;
+                    background: transparent;
+                }
+                .enrollment-container {
+                    background: #fff;
+                    border: 1px solid #e0e0e0;
+                    border-radius: 16px;
+                    padding: 40px 32px 32px 32px;
+                    box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+                    min-width: 320px;
+                    max-width: 600px;
+                    width: 100%;
+                    margin-top: 48px;
+                }
+                .enrollment-container h2 {
+                    font-size: 2rem;
+                    margin-bottom: 24px;
+                    text-align: center;
+                    font-weight: 700;
+                    color: #222;
+                }
+                .form-group {
+                    margin-bottom: 22px;
+                }
+                .form-group label {
+                    display: block;
+                    margin-bottom: 7px;
+                    font-weight: 500;
+                    color: #333;
+                }
+                .form-group input,
+                .form-group select,
+                .form-group textarea {
+                    width: 100%;
+                    padding: 12px;
+                    border: 1px solid #ccc;
+                    border-radius: 6px;
+                    font-size: 16px;
+                    box-sizing: border-box;
+                    background: #fafbfc;
+                    transition: border 0.2s;
+                }
+                .form-group input:focus,
+                .form-group select:focus,
+                .form-group textarea:focus {
+                    border: 1.5px solid #7e36d8;
+                    outline: none;
+                }
+                .form-group textarea {
+                    height: 70px;
+                }
+                .submit-btn {
+                    background-color: #7e36d8;
+                    color: white;
+                    padding: 14px 0;
+                    border: none;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    font-size: 18px;
+                    margin-top: 18px;
+                    width: 100%;
+                    font-weight: 600;
+                    box-shadow: 0 2px 8px rgba(126,54,216,0.08);
+                    transition: background 0.2s;
+                }
+                .submit-btn:hover {
+                    background-color: #5e27a6;
+                }
+                .enrollment-container hr {
+                    margin: 28px 0;
+                    border: none;
+                    border-top: 1px solid #eee;
+                }
+                @media (max-width: 700px) {
+                    .enrollment-container {
+                        max-width: 98vw;
+                        padding: 18px 4vw;
+                        margin-top: 16px;
+                    }
+                    .enrollment-form {
+                        min-height: unset;
+                    }
+                }
+            </style>';
             return $html;
         }
 
@@ -853,6 +1004,7 @@ $stmt->close();
                             <option value="textfield">Textfield</option>
                             <option value="link">Link</option>
                             <option value="image">Image</option>
+                            <option value="enrollment_form">Enrollment Form</option>
                         </select>
 
                         <label>Content</label>
