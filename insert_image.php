@@ -26,11 +26,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
 
             $stmt = $conn->prepare("INSERT INTO image (section_id, width, height, file_path) VALUES (?, ?, ?, ?)");
+            if (!$stmt) {
+                die("Prepare failed: " . $conn->error);
+            }
+
             $stmt->bind_param("isss", $section_id, $width, $height, $file_path);
 
             if ($stmt->execute()) {
                 echo "Image uploaded successfully!";
-                header("Location: image.php?id=$page_id");
+                header("Location: edited-page.php?id=$page_id");
             } else {
                 echo "Error uploading image: " . $stmt->error;
             }

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 10, 2025 at 08:34 AM
+-- Generation Time: May 10, 2025 at 10:42 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -69,8 +69,16 @@ CREATE TABLE `image` (
   `id` int(11) NOT NULL,
   `section_id` int(11) DEFAULT NULL,
   `width` varchar(50) DEFAULT NULL,
-  `height` varchar(50) DEFAULT NULL
+  `height` varchar(50) DEFAULT NULL,
+  `file_path` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `image`
+--
+
+INSERT INTO `image` (`id`, `section_id`, `width`, `height`, `file_path`) VALUES
+(8, 69, '10%', '10%', 'uploads/Screenshot 2024-10-02 094145.png');
 
 -- --------------------------------------------------------
 
@@ -146,7 +154,8 @@ INSERT INTO `sections` (`id`, `name`, `type`, `parent_id`, `width`, `height`, `a
 (64, 'Nav', '', 0, '100', '50px', 'center', 'center', '0%', '0%', '#dbadad', '0%', 'solid', '#000000', '0%', '2025-04-12 00:55:33', 30, 'row', '', ''),
 (65, 'Container', '', 0, '100', '100vh', 'center', 'center', '0%', '0%', '#fff000', '0%', 'solid', '#000000', '0%', '2025-04-12 00:57:05', 30, 'row', '', ''),
 (66, 'homer', '', 0, '100', '100vh', 'stretch', 'flex-start', '0%', '0%', '#ffffff', '0%', 'solid', '#000000', '0%', '2025-04-12 01:30:47', 28, 'row', '', ''),
-(67, 'Body', '', 0, '100', '200vh', 'stretch', 'center', '0%', '0%', '#808080', '0%', 'solid', '#000000', '0%', '2025-05-10 00:02:20', 31, 'row', 'Arial, sans-serif', '16px');
+(68, 'flex-start', '', 0, '100', '100px', 'baseline', 'flex-start', '0%', '0%', '#eaeaea', '0', 'solid', '#000000', '0%', '2025-05-10 00:42:51', 31, 'row', 'Arial, sans-serif', '16px'),
+(69, 'Center', '', 0, '100', '100vh', 'stretch', 'center', '0%', '0%', '#000000', '0%', 'solid', '#000000', '0%', '2025-05-10 01:10:40', 31, 'row', 'Arial, sans-serif', '16px');
 
 -- --------------------------------------------------------
 
@@ -168,40 +177,41 @@ CREATE TABLE `section_elements` (
   `border_radius` varchar(50) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `font_size` varchar(255) NOT NULL,
-  `font_family` varchar(255) NOT NULL
+  `font_family` varchar(255) NOT NULL,
+  `Content_Div` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `section_elements`
 --
 
-INSERT INTO `section_elements` (`id`, `section_id`, `element_type`, `content`, `width`, `height`, `alignment`, `padding`, `margin`, `border`, `border_radius`, `created_at`, `font_size`, `font_family`) VALUES
-(2, 37, 'button', 'Click Me', '120px', '40px', 'center', '10px', '5px', '1px solid black', '5px', '2025-04-11 01:08:07', '', ''),
-(3, 37, 'text', 'This is a sample paragraph.', '100%', 'auto', 'left', '5px', '5px', 'none', '0px', '2025-04-11 01:08:07', '', ''),
-(5, 39, 'button', 'Click Me', '120px', '40px', 'center', '10px', '5px', '1px solid black', '5px', '2025-04-11 01:08:55', '', ''),
-(6, 39, 'text', 'This is a sample paragraph.', '100%', 'auto', 'left', '5px', '5px', 'none', '0px', '2025-04-11 01:08:55', '', ''),
-(7, 39, 'textfield', 'Default text', '200px', '35px', 'left', '5px', '5px', '1px solid gray', '4px', '2025-04-11 01:08:55', '', ''),
-(8, 39, 'link', 'https://example.com', 'auto', 'auto', 'left', '5px', '5px', 'none', '0px', '2025-04-11 01:08:55', '', ''),
-(9, 39, 'image', 'https://via.placeholder.com/150', '150px', '150px', 'center', '5px', '10px', '1px solid #ccc', '10px', '2025-04-11 01:08:55', '', ''),
-(10, 37, 'text', 'This is the content of the text field', '100px', '40px', 'left', '5px', '5px', '1px solid #000', '5px', '2025-04-11 01:37:49', '', ''),
-(11, 37, 'text', 'This is the content of the text field', '100px', '40px', 'left', '5px', '5px', '1px solid #000', '5px', '2025-04-11 01:37:58', '', ''),
-(12, 38, 'image', 'image', '25px', '25px', 'left', '5px', '5px', '1px solid #000', '5px', '2025-04-11 07:34:31', '', ''),
-(13, 38, 'image', 'image', '25px', '25px', 'left', '5px', '5px', '1px solid #000', '5px', '2025-04-11 07:34:44', '', ''),
-(14, 45, 'button', 'Home', '100px', '40px', 'center', '5px', '5px', '1px solid #000', '5px', '2025-04-11 07:40:37', '', ''),
-(15, 45, 'button', 'about', '100px', '40px', 'left', '5px', '5px', '1px solid #000', '5px', '2025-04-11 08:21:06', '', ''),
-(16, 46, 'text', 'This is my world!!', '100px', '40px', 'center', '', '0', '0', '', '2025-04-11 09:12:52', '', ''),
-(17, 46, 'text', 'Hakdawg', '100px', '40px', 'center', '0', '0', '0', '0', '2025-04-11 18:15:29', '', ''),
-(18, 46, 'text', 'Mama mo hakdawg', '100px', '40px', 'center', '0', '0', '0', '0', '2025-04-11 18:18:14', '', ''),
-(19, 46, 'link', 'facebook.com', '100px', '40px', 'center', '0', '0', '0', '0', '2025-04-11 18:33:19', '', ''),
-(25, 58, 'link', 'Home', '100px', '20px', 'center', '5px', '5px', '1px solid #000', '5px', '2025-04-12 05:03:37', '', ''),
-(26, 58, 'text', 'about', '100px', '20px', 'center', '5px', '5px', '1px solid #000', '5px', '2025-04-12 05:04:16', '', ''),
-(28, 59, 'text', 'the most reliable internet connection', '100px', '50px', 'left', '5px', '5px', '1px solid #000', '5px', '2025-04-12 05:34:14', '', ''),
-(29, 64, 'link', 'Home', '100px', '40px', 'left', '5px', '5px', '1px solid #000', '5px', '2025-04-12 06:56:10', '', ''),
-(30, 64, 'button', 'About', '100px', '40px', 'left', '5px', '5px', '1px solid #000', '5px', '2025-04-12 06:56:23', '', ''),
-(31, 64, 'button', 'Contact', '100px', '40px', 'left', '5px', '5px', '1px solid #000', '5px', '2025-04-12 06:56:42', '', ''),
-(32, 65, 'text', 'Hello this is my context.', '100px', '40px', 'center', '5px', '5px', '0', '0', '2025-04-12 06:58:24', '', ''),
-(33, 58, 'button', 'custom', '100px', '40px', 'left', '5px', '5px', '1px solid #000', '5px', '2025-04-12 07:30:32', '', ''),
-(34, 67, 'enrollment_form', 'qwe', '500px', '40px', 'left', '5px', '5px', '0px solid #000', '0px', '2025-05-10 06:03:37', 'px', 'Arial');
+INSERT INTO `section_elements` (`id`, `section_id`, `element_type`, `content`, `width`, `height`, `alignment`, `padding`, `margin`, `border`, `border_radius`, `created_at`, `font_size`, `font_family`, `Content_Div`) VALUES
+(2, 37, 'button', 'Click Me', '120px', '40px', 'center', '10px', '5px', '1px solid black', '5px', '2025-04-11 01:08:07', '', '', ''),
+(3, 37, 'text', 'This is a sample paragraph.', '100%', 'auto', 'left', '5px', '5px', 'none', '0px', '2025-04-11 01:08:07', '', '', ''),
+(5, 39, 'button', 'Click Me', '120px', '40px', 'center', '10px', '5px', '1px solid black', '5px', '2025-04-11 01:08:55', '', '', ''),
+(6, 39, 'text', 'This is a sample paragraph.', '100%', 'auto', 'left', '5px', '5px', 'none', '0px', '2025-04-11 01:08:55', '', '', ''),
+(7, 39, 'textfield', 'Default text', '200px', '35px', 'left', '5px', '5px', '1px solid gray', '4px', '2025-04-11 01:08:55', '', '', ''),
+(8, 39, 'link', 'https://example.com', 'auto', 'auto', 'left', '5px', '5px', 'none', '0px', '2025-04-11 01:08:55', '', '', ''),
+(9, 39, 'image', 'https://via.placeholder.com/150', '150px', '150px', 'center', '5px', '10px', '1px solid #ccc', '10px', '2025-04-11 01:08:55', '', '', ''),
+(10, 37, 'text', 'This is the content of the text field', '100px', '40px', 'left', '5px', '5px', '1px solid #000', '5px', '2025-04-11 01:37:49', '', '', ''),
+(11, 37, 'text', 'This is the content of the text field', '100px', '40px', 'left', '5px', '5px', '1px solid #000', '5px', '2025-04-11 01:37:58', '', '', ''),
+(12, 38, 'image', 'image', '25px', '25px', 'left', '5px', '5px', '1px solid #000', '5px', '2025-04-11 07:34:31', '', '', ''),
+(13, 38, 'image', 'image', '25px', '25px', 'left', '5px', '5px', '1px solid #000', '5px', '2025-04-11 07:34:44', '', '', ''),
+(14, 45, 'button', 'Home', '100px', '40px', 'center', '5px', '5px', '1px solid #000', '5px', '2025-04-11 07:40:37', '', '', ''),
+(15, 45, 'button', 'about', '100px', '40px', 'left', '5px', '5px', '1px solid #000', '5px', '2025-04-11 08:21:06', '', '', ''),
+(16, 46, 'text', 'This is my world!!', '100px', '40px', 'center', '', '0', '0', '', '2025-04-11 09:12:52', '', '', ''),
+(17, 46, 'text', 'Hakdawg', '100px', '40px', 'center', '0', '0', '0', '0', '2025-04-11 18:15:29', '', '', ''),
+(18, 46, 'text', 'Mama mo hakdawg', '100px', '40px', 'center', '0', '0', '0', '0', '2025-04-11 18:18:14', '', '', ''),
+(19, 46, 'link', 'facebook.com', '100px', '40px', 'center', '0', '0', '0', '0', '2025-04-11 18:33:19', '', '', ''),
+(25, 58, 'link', 'Home', '100px', '20px', 'center', '5px', '5px', '1px solid #000', '5px', '2025-04-12 05:03:37', '', '', ''),
+(26, 58, 'text', 'about', '100px', '20px', 'center', '5px', '5px', '1px solid #000', '5px', '2025-04-12 05:04:16', '', '', ''),
+(28, 59, 'text', 'the most reliable internet connection', '100px', '50px', 'left', '5px', '5px', '1px solid #000', '5px', '2025-04-12 05:34:14', '', '', ''),
+(29, 64, 'link', 'Home', '100px', '40px', 'left', '5px', '5px', '1px solid #000', '5px', '2025-04-12 06:56:10', '', '', ''),
+(30, 64, 'button', 'About', '100px', '40px', 'left', '5px', '5px', '1px solid #000', '5px', '2025-04-12 06:56:23', '', '', ''),
+(31, 64, 'button', 'Contact', '100px', '40px', 'left', '5px', '5px', '1px solid #000', '5px', '2025-04-12 06:56:42', '', '', ''),
+(32, 65, 'text', 'Hello this is my context.', '100px', '40px', 'center', '5px', '5px', '0', '0', '2025-04-12 06:58:24', '', '', ''),
+(33, 58, 'button', 'custom', '100px', '40px', 'left', '5px', '5px', '1px solid #000', '5px', '2025-04-12 07:30:32', '', '', '<div class=\" \">'),
+(35, 69, 'image', '\r\n', '100px', '40px', 'left', '5px', '5px', '1px solid #000', '5px', '2025-05-10 07:10:53', 'em', 'Times New Roman', '');
 
 -- --------------------------------------------------------
 
@@ -273,7 +283,7 @@ ALTER TABLE `enrollments`
 -- AUTO_INCREMENT for table `image`
 --
 ALTER TABLE `image`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `pages`
@@ -285,13 +295,13 @@ ALTER TABLE `pages`
 -- AUTO_INCREMENT for table `sections`
 --
 ALTER TABLE `sections`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
 
 --
 -- AUTO_INCREMENT for table `section_elements`
 --
 ALTER TABLE `section_elements`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- Constraints for dumped tables

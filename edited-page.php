@@ -50,8 +50,6 @@ while ($row = $result->fetch_assoc()) {
 $stmt->close();
 ?>
 
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -793,35 +791,60 @@ $stmt->close();
             return $html;
         }
 
-        // Renders the sections and recursively their child sections and elements
-        function renderSections($parent_id, $grouped_sections, $grouped_elements)
-        {
-            if (!isset($grouped_sections[$parent_id])) return '';
+        // Fetch all images related to this page, grouped by section_id
+        $image_query = "SELECT section_id, file_path, width, height FROM image WHERE section_id IN (SELECT id FROM sections WHERE page_id = ?)";
+        $image_stmt = $conn->prepare($image_query);
+        $image_stmt->bind_param("i", $page_id);
+        $image_stmt->execute();
+        $image_result = $image_stmt->get_result();
 
+        $grouped_images = [];
+        while ($image = $image_result->fetch_assoc()) {
+            $grouped_images[$image['section_id']][] = $image;
+        }
+        $image_stmt->close();
+
+        function renderSections($parent_id, $grouped_sections, $grouped_elements, $grouped_images, $conn) {
+            if (!isset($grouped_sections[$parent_id])) return '';
+        
             $html = '';
             foreach ($grouped_sections[$parent_id] as $section) {
                 $html .= '<div class="' . htmlspecialchars($section['name']) . '" 
-                style="width: ' . htmlspecialchars($section['width']) . ';
-                    height: ' . htmlspecialchars($section['height']) . ';
-                    background-color: ' . htmlspecialchars($section['background_color']) . ';
-                    padding: ' . htmlspecialchars($section['padding']) . ';
-                    margin: ' . htmlspecialchars($section['margin']) . ';
-                    border: ' . htmlspecialchars($section['border_value']) . ' ' . htmlspecialchars($section['border_style']) . ' ' . htmlspecialchars($section['border_color']) . ';
-                    border-radius: ' . htmlspecialchars($section['border_radius']) . ';
-                    display: flex;
-                    flex-direction: ' . htmlspecialchars($section['flex_direction']) . ';
-                    align-items: ' . htmlspecialchars($section['align_items']) . ';
-                    justify-content: ' . htmlspecialchars($section['justify_content']) . ';
-                    min-height: 50px;">';
-
-                // $html .= '<strong>' . htmlspecialchars($section['name']) . '</strong>';
-                $html .= renderElements($section['id'], $grouped_elements);
-                $html .= renderSections($section['id'], $grouped_sections, $grouped_elements);
+                    style="width: ' . htmlspecialchars($section['width']) . ';
+                           height: ' . htmlspecialchars($section['height']) . ';
+                           background-color: ' . htmlspecialchars($section['background_color']) . ';
+                           padding: ' . htmlspecialchars($section['padding']) . ';
+                           margin: ' . htmlspecialchars($section['margin']) . ';
+                           border: ' . htmlspecialchars($section['border_value']) . ' ' . htmlspecialchars($section['border_style']) . ' ' . htmlspecialchars($section['border_color']) . ';
+                           border-radius: ' . htmlspecialchars($section['border_radius']) . ';
+                           display: flex;
+                           flex-direction: ' . htmlspecialchars($section['flex_direction']) . ';
+                           align-items: ' . htmlspecialchars($section['align_items']) . ';
+                           justify-content: ' . htmlspecialchars($section['justify_content']) . ';
+                           min-height: 50px;">';
+        
+                // Render elements
+                $html .= renderElements($section['id'], $grouped_elements, $conn);
+        
+                // Render images for this section
+                if (isset($grouped_images[$section['id']])) {
+                    foreach ($grouped_images[$section['id']] as $image) {
+                        $file_path = htmlspecialchars($image['file_path']);
+                        $width = htmlspecialchars($image['width']);
+                        $height = htmlspecialchars($image['height']);
+                        $html .= "<img src='$file_path' style='width: $width; height: $height;' alt='Section Image'>";
+                    }
+                }
+        
+                // Render child sections recursively
+                $html .= renderSections($section['id'], $grouped_sections, $grouped_elements, $grouped_images, $conn);
+        
                 $html .= '</div>';
             }
-
+        
             return $html;
         }
+        
 
 
         $grouped_sections = groupSectionsByParent($sections);
@@ -832,7 +855,9 @@ $stmt->close();
 
 
         <div class="viewing" id="viewing-area">
-            <?= renderSections(0, $grouped_sections, $grouped_elements) ?>
+        <?= renderSections(0, $grouped_sections, $grouped_elements, $grouped_images, $mysqli) ?>
+
+
         </div>
 
         <aside>
