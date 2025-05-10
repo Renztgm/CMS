@@ -35,16 +35,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $created_at = date("Y-m-d H:i:s");
 
         // Prepare insert statement
-        $stmt = $conn->prepare("INSERT INTO sections 
-            (name, type, parent_id, width, height, align_items, justify_content, padding, margin, background_color, 
-             border_value, border_style, border_color, border_radius, created_at, page_id, flex_direction, font_family, font_size)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-
-        $stmt->bind_param("sssssssssssssssssss", 
-                          $name, $type, $parent_id, $width, $height, $align_items, $justify_content, 
-                          $padding_value, $margin_value, $background_color, $border_value, $border_style, 
-                          $border_color, $border_radius_value, $created_at, $page_id, $flex_direction, 
-                          $font_family, $font_size);
+        $sql = "INSERT INTO sections 
+        (name, type, parent_id, width, height, align_items, justify_content, padding, margin, background_color, 
+         border_value, border_style, border_color, border_radius, created_at, page_id, flex_direction, font_family, font_size)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    
+            $stmt = $conn->prepare($sql);
+            
+            if (!$stmt) {
+                die("Prepare failed: " . $conn->error);
+            }
+            
+            $stmt->bind_param("sssssssssssssssssss", 
+                $name, $type, $parent_id, $width, $height, $align_items, $justify_content, 
+                $padding_value, $margin_value, $background_color, $border_value, $border_style, 
+                $border_color, $border_radius_value, $created_at, $page_id, $flex_direction, 
+                $font_family, $font_size);
+            
 
         if ($stmt->execute()) {
             header("Location: edited-page.php?id=" . $page_id);
